@@ -80,7 +80,7 @@ export default function FilterBar({filters, setFilters, handleFilterChange, isPr
           </select>
         </div>
 
-        {/* Nút Reset Filter */}
+        {/* Reset Filter */}
         <button 
           className="ml-auto text-sm text-teal-700 hover:text-teal-900 font-semibold px-3 py-1.5 rounded hover:bg-teal-50 transition-colors"
           onClick={() => setFilters({ patientName: '', gender: '', bloodGroup: '', status: '' })}

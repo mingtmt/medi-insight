@@ -3,6 +3,7 @@ import { getScrollbarSize, List } from "react-window";
 import { type PatientRecord } from "./types";
 import RowComponent from "./components/RowComponent";
 import FilterBar from "./components/FilterBar";
+import HeartRateChart from "./components/HeartRateChart";
 
 const dataWorker = new Worker(new URL("./workers/dataWoker.ts", import.meta.url));
 
@@ -122,6 +123,8 @@ export default function App() {
           />
         )}
       </div>
+
+      <HeartRateChart patients={patients} displayIndices={displayIndices} />
     </div>
   )
 }

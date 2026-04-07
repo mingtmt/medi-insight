@@ -11,7 +11,6 @@ self.onmessage = (e) => {
 
   if (action === 'PROCESS') {
     const { filters, sortConfig } = payload;
-    console.log(filters)
     const { patientName, gender, bloodGroup, status } = filters;
     
     const lowerSearchName = patientName.toLowerCase();
