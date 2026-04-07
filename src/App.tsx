@@ -1,14 +1,13 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { getScrollbarSize, List } from "react-window";
 import { type PatientRecord } from "./types";
 import RowComponent from "./components/RowComponent";
 import FilterBar from "./components/FilterBar";
 import HeartRateChart from "./components/HeartRateChart";
 
-const dataWorker = new Worker(new URL("./workers/dataWoker.ts", import.meta.url));
-
 export default function App() {
   const [size] = useState(getScrollbarSize);
+  const workerRef = useRef<Worker | null>(null);
   const [patients, setPatients] = useState<PatientRecord[]>([]);
   const [isWorkerReady, setIsWorkerReady] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -21,22 +20,28 @@ export default function App() {
   const [displayIndices, setDisplayIndices] = useState<Int32Array | null>(null);
 
   useEffect(() => {
+    workerRef.current = new Worker(new URL("./workers/dataWoker.ts", import.meta.url));
+
     fetch("/public/clinical_data.json")
       .then((response) => response.json())
       .then((data) => {
         setPatients(data);
         setDisplayIndices(new Int32Array(data.map((_: any, i: number) => i)));
         
-        dataWorker.postMessage({ action: 'INIT', payload: { data } });
+        workerRef.current?.postMessage({ action: 'INIT', payload: { data } });
       })
       .catch((error) => console.error(error));
 
-    dataWorker.onmessage = (e) => {
+    workerRef.current.onmessage = (e) => {
       if (e.data.type === 'READY') setIsWorkerReady(true);
       if (e.data.type === 'RESULT') {
         setDisplayIndices(e.data.displayIndices);
         setIsProcessing(false);
       }
+    };
+
+    return () => {
+      workerRef.current?.terminate();
     };
   }, []);
 
@@ -44,7 +49,7 @@ export default function App() {
     if (!isWorkerReady || patients.length === 0) return;
     
     setIsProcessing(true);
-    dataWorker.postMessage({
+    workerRef.current?.postMessage({
       action: 'PROCESS',
       payload: { filters, sortConfig }
     });
