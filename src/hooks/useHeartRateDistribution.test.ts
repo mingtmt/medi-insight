@@ -1,12 +1,11 @@
-// src/tests/useHeartRateDistribution.test.ts
 import { renderHook } from '@testing-library/react';
 import { describe, test, expect } from 'vitest';
-import { useHeartRateDistribution } from '../hooks/useHeartRateDistribution';
+import { useHeartRateDistribution } from './useHeartRateDistribution';
 import { type PatientRecord } from '../types';
 
 describe('Hook: useHeartRateDistribution', () => {
   
-  test('Nên gộp đúng số lượng bệnh nhân vào các khoảng nhịp tim (BIN_SIZE = 10)', () => {
+  test('Should return correct chart data', () => {
     const mockPatients: Partial<PatientRecord>[] = [
       { patientName: 'A', heartRate: 72 },
       { patientName: 'B', heartRate: 78 },
